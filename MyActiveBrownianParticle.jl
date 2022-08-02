@@ -15,8 +15,8 @@ end
 ## Get position and orientation of the particle or ensemble (CURRENTLY ONLY 2D)
 position(abp::ABP2) = ( abp.x, abp.y, abp.θ )
 
-position(abpe::ABPE2) = [ abpe.x abpe.y ]
-orientation(abpe::ABPE2) = abpe.θ
+#position(abpe::ABPE2) = [ abpe.x abpe.y ]
+#orientation(abpe::ABPE2) = abpe.θ
 
 ## Initialize ABP particle (CURRENTLY ONLY 2D)
 function initABP(position::NTuple, R::Float64, v::Float64; T::Float64=300.0, η::Float64=1e-3)
@@ -72,6 +72,10 @@ function trajectory(abp::ABP, N; δt::Float64=1e-3) where {ABP <: ActiveBrownian
 	end
 	return p, t
 end
+## INTERVALLO DI TEMPO TOTALE DENTRO CUI CONSIDERO LA TRAIETTORIA:
+# δt = 1e-3
+# N = 100000    (scelto da me in fase di scrittura del programma)
+# t_tot = δt * N = 100s = 1min e 40sec
 
 ## Plot trajectory
 function plot_trajectory(x,y)

@@ -12,8 +12,9 @@ using Distances
 
 ## PARTIAMO DAL PRIMO GRAFICO PER UNA PARTICELLA DI RAGGIO 0.5MICRON E V=0 ##
 
-#inizializzazione particella (R=0.5e-6m , v=0m/s)
-abp1 = initABP( (0.0, 0.0, 0.0), 0.5, 0.0 );
+#inizializzazione particella (R=0.5e-6m , v=0m/s) 
+orientazione = rand(float(0:pi/2))
+abp1 = initABP( (0.0, 0.0, orientazione), 0.5, 0.0 );
 
 
 #creo il primo grafico grafico 
@@ -33,7 +34,7 @@ y = [pi[2] for pi in p]
 
 #plotto in x y
 
-plot(x,y, range=[-100,75], title = "ActiveParticle1 (R=0.5µm, v=0µm/s)", aspect_ratio= :equal,legend=false) 
+plot1 = plot(x,y, range=[-100,75], title = "ActiveParticle1 (R=0.5µm, v=0µm/s)", aspect_ratio= :equal,legend=false) 
 #scatter!([x[end]],[y[end]], legend=false)
 xlabel!("x [μm]")
 ylabel!("y [μm]")
@@ -68,7 +69,7 @@ plot!(x,y,range=[-100,75],legend=false,aspect_ratio= :equal)
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 0.5MICRON E V=5µm/s ##
 
 #inizializzazione particella (R=0.5e-6m , v=5µm/s)
-abp1 = initABP( (0.0, 0.0, 0.0), 0.5, 5.0 );
+abp1 = initABP( (0.0, 0.0, orientazione), 0.5, 5.0 );
 
 #creo il primo grafico grafico 
 N = 100000
@@ -86,7 +87,7 @@ y = [pi[2] for pi in p]
 # assume tutti i valori dentro p (cioè parte da p)
 
 #plotto in x y
-plot(x,y,range=[-100,75], title = "ActiveParticle2 (R=0.5µm, v=5µm/s)", aspect_ratio= :equal,legend=false) 
+plot2 = plot(x,y,range=[-100,75], title = "ActiveParticle2 (R=0.5µm, v=5µm/s)", aspect_ratio= :equal,legend=false) 
 #scatter!([x[end]],[y[end]], legend=false)
 xlabel!("x [μm]")
 ylabel!("y [μm]")
@@ -117,14 +118,16 @@ plot!(x,y,range=[-100,75],aspect_ratio= :equal,legend=false)
 #subplot e metto i 4 grafici in un unico grafico
 #plot(plot1, plot2 , plot3, plot4; layout = 4, title = ["Trajectory 1" "Trajectory 2" "Trajectory 3" "Trajectory 4" ], plot_title = "ActiveParticle2 (R=0.5µm, v=5µm/s)", plot_titlevspan=0.1)
 
-
+# subplot deei due grafici della stessa particella:
+plot(plot1, plot2; layout = 2, plot_title = "ActiveParticle1 (R = 0.5µm, θ = $orientazione rad)", title = ["v = 0µm/s" "v = 5µm/s"], plot_titlevspan = 0.1)
 
 
 
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 2.5µm E v=0µm/s ##
 
 #inizializzazione particella (R=2.5e-6m , v=0µm/s)
-abp1 = initABP( (0.0, 0.0, 0.0), 2.5, 0.0 );
+orientazione2 = rand(0.0:pi/2)
+abp1 = initABP( (0.0, 0.0, orientazione2), 2.5, 0.0 );
 
 #creo il primo grafico grafico 
 N = 100000
@@ -142,7 +145,7 @@ y = [pi[2] for pi in p]
 # assume tutti i valori dentro p (cioè parte da p)
 
 #plotto in x y
-plot(x,y, xlim=[-25,200],ylim=[-100,100], title = "ActiveParticle3 (R=2.5µm, v=0µm/s)", aspect_ratio= :equal) 
+plot3 = plot(x,y, xlim=[-25,200],ylim=[-100,100], title = "ActiveParticle3 (R=2.5µm, v=0µm/s)", aspect_ratio= :equal) 
 #scatter!([x[end]],[y[end]], legend=false)
 xlabel!("x [μm]")
 ylabel!("y [μm]")
@@ -178,7 +181,7 @@ plot!(x,y,xlim=[-25,200],ylim=[-100,100],legend=false,aspect_ratio= :equal)
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 2.5MICRON E v=5µm/s ##
 
 #inizializzazione particella (R=2.5e-6m , v=5µm/s)
-abp1 = initABP( (0.0, 0.0, 0.0), 2.5, 5.0 );
+abp1 = initABP( (0.0, 0.0, orientazione2), 2.5, 5.0 );
 
 #creo il primo grafico grafico 
 N = 100000
@@ -196,7 +199,7 @@ y = [pi[2] for pi in p]
 # assume tutti i valori dentro p (cioè parte da p)
 
 #plotto in x y
-plot(x,y,xlim=[-25,200],ylim=[-100,100], title = "ActiveParticle4 (R=2.5µm, v=5µm/s)", aspect_ratio= :equal) 
+plot4 = plot(x,y,xlim=[-25,200],ylim=[-100,100], title = "ActiveParticle4 (R=2.5µm, v=5µm/s)", aspect_ratio= :equal) 
 #scatter!([x[end]],[y[end]], legend=false)
 xlabel!("x [μm]")
 ylabel!("y [μm]")
@@ -224,6 +227,8 @@ plot!(x,y,xlim=[-25,200],ylim=[-100,100],legend=false,aspect_ratio= :equal)
 #subplot e metto i 4 grafici in un unico grafico
 #plot(plot1, plot2 , plot3, plot4; layout = 4, title = ["Trajectory 1" "Trajectory 2" "Trajectory 3" "Trajectory 4"], plot_title = "ActiveParticle4 (R=2.5µm, v=5µm/s)", plot_titlevspan=0.1)
 
+#subplot per visualizzare plot3 e plot4 vicini
+plot(plot3, plot4; layout = 2, plot_title = "ActiveParticle2 (R = 2.5µm, θ = $orientazione2 rad)", title = ["v = 0µm/s" "v = 5µm/s"], plot_titlevspan = 0.1)
 
 
 
