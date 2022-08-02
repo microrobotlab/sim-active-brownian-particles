@@ -13,7 +13,8 @@ using Distances
 ## PARTIAMO DAL PRIMO GRAFICO PER UNA PARTICELLA DI RAGGIO 0.5MICRON E V=0 ##
 
 #inizializzazione particella (R=0.5e-6m , v=0m/s) 
-orientazione = rand(float(0:pi/2))
+orientazione = rand()*2*pi 
+orientazione = round(orientazione, digits=3)
 abp1 = initABP( (0.0, 0.0, orientazione), 0.5, 0.0 );
 
 
@@ -62,8 +63,6 @@ plot!(x,y,range=[-100,75],legend=false,aspect_ratio= :equal)
     
 #subplot e metto i 4 grafici in un unico grafico facendo subplot
 #plot(plot1, plot2 , plot3, plot4; layout = 4, title = ["Trajectory 1" "Trajectory 2" "Trajectory 3" "Trajectory 4" ], plot_title = "ActiveParticle1 (R=0.5µm, v=0µm/s)", plot_titlevspan=0.1)
-
-
 
 
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 0.5MICRON E V=5µm/s ##
@@ -123,16 +122,19 @@ plot(plot1, plot2; layout = 2, plot_title = "ActiveParticle1 (R = 0.5µm, θ = $
 
 
 
+
+
+
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 2.5µm E v=0µm/s ##
 
 #inizializzazione particella (R=2.5e-6m , v=0µm/s)
-orientazione2 = rand(0.0:pi/2)
+orientazione2 = rand()*2*pi 
+orientazione2 = round(orientazione2, digits=3)
 abp1 = initABP( (0.0, 0.0, orientazione2), 2.5, 0.0 );
 
 #creo il primo grafico grafico 
 N = 100000
 p, t = trajectory( abp1, N);
-
 #NOTA: p è un vettore di tuple, ovvero è un vettore con N elementi 
 # e ciascun elemento è una tupla (x,y, teta)
 
@@ -172,10 +174,6 @@ plot!(x,y,xlim=[-25,200],ylim=[-100,100],legend=false,aspect_ratio= :equal)
     
 #subplot e metto i 4 grafici in un unico grafico
 #plot(plot1, plot2 , plot3, plot4; layout = 4, title = ["Trajectory 1" "Trajectory 2" "Trajectory 3" "Trajectory 4"], plot_title = "ActiveParticle3 (R=2.5µm, v=0µm/s)", plot_titlevspan=0.1)
-
-
-
-
 
 
 ## RIPETIAMO PER UNA PARTICELLA DI RAGGIO 2.5MICRON E v=5µm/s ##
