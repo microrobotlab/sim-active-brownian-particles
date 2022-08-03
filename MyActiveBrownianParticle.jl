@@ -62,7 +62,7 @@ function diffusion_coeff(R::Float64, T::Float64=300.0, η::Float64=1e-3)
 end;
 
 ## Create single particle trajectory
-function trajectory(abp::ABP, N; δt::Float64=1e-3) where {ABP <: ActiveBrownianParticle}
+function trajectory(abp::ABP, N, δt::Float64) where {ABP <: ActiveBrownianParticle}
 	p = [position(abp)]
 	t = 0:δt:δt*N
     
@@ -101,4 +101,16 @@ function animate_trajectory(p, t, time_vec, tidx)
 	
 	plot_trajectory(x, y)
 	title!("t = $(round(t[ti[end]],digits=1)) s, $framerate fps")
+end
+
+#Funzione calcolo MSD
+function MSDcalculate(x,y,tauMax)
+    ltrack= N
+    msd=zeros(tauMax+1)
+    for tau in 1:tauMax
+        for i in tau+1:ltrack
+            msd[tau+1]+=((x[i]-x[i-tau])^2+(y[i]-y[i-tau])^2)/(ltrack-tau)
+        end
+    end
+    return msd
 end
