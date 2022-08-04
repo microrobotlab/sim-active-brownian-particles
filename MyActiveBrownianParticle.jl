@@ -103,14 +103,46 @@ function animate_trajectory(p, t, time_vec, tidx)
 	title!("t = $(round(t[ti[end]],digits=1)) s, $framerate fps")
 end
 
-#Funzione calcolo MSD
-function MSDcalculate(x,y,tauMax)
-    ltrack= N
-    msd=zeros(tauMax+1)
-    for tau in 1:tauMax
+#------------------------------
+#Funzione calcolo MSD (Estratta da file MSD di Gaia e riscritta per semplificarla)
+function MSDcalculate(x,y,N_Max,N)
+    ltrack= N+1
+    msd=zeros(N_Max+1)
+    for tau in 1:N_Max
         for i in tau+1:ltrack
             msd[tau+1]+=((x[i]-x[i-tau])^2+(y[i]-y[i-tau])^2)/(ltrack-tau)
         end
     end
     return msd
 end
+
+#--------------------------------
+# Funzione che genera n traiettorie, mi plotta solo le prime 4 in un grafico e fa la media degli MSD di tutte 
+function traj_and_MSD(x0, y0, R::Float64, v::Float64, num_traj::Int64, N, Delta_t::Float64, N_Max)
+    graph = plot();
+    matrMSD = fill(NaN, N_Max+1, num_traj)
+
+    for i in 1:num_traj
+        orientazione = rand()*2*pi
+        orientazione = round(orientazione, digits=3)
+        abp = initABP( (x0, y0, orientazione), R, v);
+
+        p, t = trajectory( abp, N, Delta_t);
+
+        x = [pi[1] for pi in p]
+        y = [pi[2] for pi in p]
+
+        if i <= 4 
+            plot!(x,y, range=[-100,75],  title = "ActiveParticle (R=$R µm, v=$v µm/s)", aspect_ratio= :equal, legend=false)
+            xlabel!("x [μm]")
+            ylabel!("y [μm]")
+        end
+
+        matrMSD[1:N_Max+1, i] = MSDcalculate(x,y, N_Max, N)
+    end
+
+    return graph, matrMSD 
+
+end
+
+
