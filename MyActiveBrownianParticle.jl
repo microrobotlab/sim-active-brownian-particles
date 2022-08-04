@@ -133,7 +133,7 @@ function traj_and_MSD(x0, y0, R::Float64, v::Float64, num_traj::Int64, N, Delta_
         y = [pi[2] for pi in p]
 
         if i <= 4 
-            plot!(x,y, range=[-100,75],  title = "ActiveParticle (R=$R µm, v=$v µm/s)", aspect_ratio= :equal, legend=false)
+            plot!(x,y, range=[-50,50],  title = "ActiveParticle (R=$R µm, v=$v µm/s)", aspect_ratio= :equal, legend=false)
             xlabel!("x [μm]")
             ylabel!("y [μm]")
         end
