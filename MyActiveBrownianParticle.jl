@@ -45,7 +45,7 @@ function step(abp::ABP, δt::Float64) where {ABP <: ActiveBrownianParticle}
     return δp
 end
 
-## Update position and orientation of the particle (create new)
+## Update position and orientation of the particle 
 update(abp::ABP, step) where {ABP <: ActiveBrownianParticle} = ABP( (position(abp) .+ step)..., abp.R, abp.v, abp.DT, abp.DR )
 
 ##Calculate diffusion coefficient
@@ -72,10 +72,6 @@ function trajectory(abp::ABP, N, δt::Float64) where {ABP <: ActiveBrownianParti
 	end
 	return p, t
 end
-## INTERVALLO DI TEMPO TOTALE DENTRO CUI CONSIDERO LA TRAIETTORIA:
-# δt = 1e-3
-# N = 100000    (scelto da me in fase di scrittura del programma)
-# t_tot = δt * N = 100s = 1min e 40sec
 
 ## Plot trajectory
 function plot_trajectory(x,y)
@@ -104,7 +100,7 @@ function animate_trajectory(p, t, time_vec, tidx)
 end
 
 #------------------------------
-#Funzione calcolo MSD (Estratta da file MSD di Gaia e riscritta per semplificarla)
+# MSD calculate (Estratta da file MSD di Gaia e riscritta per semplificarla)
 function MSDcalculate(x,y,N_Max,N)
     ltrack= N+1
     msd=zeros(N_Max+1)
@@ -144,5 +140,8 @@ function traj_and_MSD(x0, y0, R::Float64, v::Float64, num_traj::Int64, N, Delta_
     return graph, matrMSD 
 
 end
+
+#------------------------------ 
+
 
 
