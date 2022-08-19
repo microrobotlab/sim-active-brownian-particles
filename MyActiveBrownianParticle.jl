@@ -142,6 +142,92 @@ function traj_and_MSD(x0, y0, R::Float64, v::Float64, num_traj::Int64, N, Delta_
 end
 
 #------------------------------ 
+#------------------------------ 
+#------------------------------ 
+#------------------------------ 
 
+# INIZIALIZZAZIONE DI UN INSIEME DI PARTICELLE IN CUI CONSIDERIAMO LE INTERAZIONI STERICHE
 
+# Define an "ABPsEnsemble" Type
+abstract type ABPsEnsemble end
+
+# Define a specific type for 2D ABPsEnsembles (CURRENTLY ASSUMING ALL PARTICLES ARE EQUAL)
+struct ABPE2 <: ABPsEnsemble
+    Np::Int64                      # number of particles
+    L::Float64                      # size of observation space (μm)
+	R::Float64  # Radius (μm)                                   --> Vector{Float64}(undef,Np)
+	v::Float64 	# velocity (μm/s)                               --> Vector{Float64}(undef,Np)
+	DT::Float64 # translational diffusion coefficient (μm^2/s)  --> Vector{Float64}(undef,Np)
+	DR::Float64 # rotational diffusion coefficient (rad^2/s)    --> Vector{Float64}(undef,Np)
+	x::Vector{Float64}    # x position (μm)
+	y::Vector{Float64}    # y position (μm)
+	θ::Vector{Float64}    # orientation (rad)
+end
+
+## Initialize ABP ensemble (CURRENTLY ONLY 2D)
+function initABPE(Np::Int64, L::Float64, R::Float64, v::Float64; T::Float64=300.0, η::Float64=1e-3)
+    # translational diffusion coefficient [m^2/s] & rotational diffusion coefficient [rad^2/s] - R [m]
+    DT, DR = diffusion_coeff(1e-6R)
+
+    # ONLY 2D!
+    xyθ = (rand(Np,3).-0.5).*repeat([L L 2π],Np)
+    xyθ[:,1:2], dists, superpose, uptriang = hardsphere(xyθ[:,1:2],R)
+    abpe = ABPE2( Np, L, R, v, 1e12DT, DR, xyθ[:,1], xyθ[:,2], xyθ[:,3])
+
+    return abpe, (dists, superpose, uptriang)
+end
+
+#------------------------------ 
+# FUNZIONI PER LA CORREZIONE DELLE POSIZIONI DI PARTICELLE SOVRAPPOSTE
+function hardsphere_correction!(xy::Array{Float64,2}, dists::Array{Float64,2}, superpose::BitArray{2}, R::Float64; tol::Float64=1e-3)
+    Np = size(superpose,1)
+    for np1 in 1:Np
+        if any(superpose[np1,:])
+            np2 = findfirst(superpose[np1,:])
+            Δp = (xy[np1,:] - xy[np2,:]) .* ( ( (1+tol)*2R / dists[np1,np2] - 1 ) / 2 )
+            xy[np1,:] += Δp
+            xy[np2,:] -= Δp
+            dists[np2,np2+1:Np] = pairwise(Euclidean(), xy[np2:np2,:], xy[np2+1:Np,:], dims=1 )
+            superpose[np2,np2+1:Np] = (dists[np2,np2+1:Np] .< 2R*(1-tol))
+        end
+    end
+    return nothing
+end
+
+function hardsphere!(xy::Array{Float64,2}, dists::Array{Float64,2}, superpose::BitArray{2}, uptriang::BitArray{2}, R::Float64; tol::Float64=1e-3)
+    superpositions = 1
+    counter = 0
+    # @time begin
+    while superpositions > 0
+        dists .= pairwise(Euclidean(),xy,xy,dims=1)
+        superpose .= (dists .< 2R*(1-tol)).*uptriang
+        # @show(findall(superpose))
+        superpositions = sum(superpose)
+        # @show(superpositions)
+        if superpositions > 0
+            hardsphere_correction!(xy,dists,superpose,R,tol=tol)
+        end
+        counter += 1
+        # @show(counter)
+        if counter >= 100
+            println("$superpositions superpositions remaining after 100 cycles")
+            break
+        end
+    end
+    # end
+    return nothing
+end
+
+function hardsphere(xy::Array{Float64,2}, R::Float64; tol::Float64=1e-3)
+    Np = size(xy,1)
+    dists = zeros(Np,Np)
+    superpose = falses(Np,Np)
+    uptriang = falses(Np,Np)
+    for i = 1:Np-1
+        uptriang[i,i+1:Np] .= true
+    end
+    hardsphere!(xy, dists, superpose, uptriang, R; tol=tol)
+    return xy, dists, superpose, uptriang
+end
+#------------------------------ 
 
