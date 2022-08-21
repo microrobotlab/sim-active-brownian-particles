@@ -107,3 +107,22 @@ xlabel!("Δt [s]");
 ylabel!("MSD [μm²]")
 
 # ---------------------------------------------------------------
+
+# Grafichiamo l'insieme di particelle considerando la correzione di sfere dure
+
+L = 100.0 	# μm
+R = 1.0		# μm
+v = 10.0 	# μm/s
+DT, DR = diffusion_coeff(R).*[1e12, 1]
+packing_fraction = 0.2
+Np = round(Int,packing_fraction*L^2/(2R^2))  # Np è il numero di particelle del mio insieme e lo sceglo random
+
+Nt = 1000 # Nt è il numero di step che voglio calcolare del mio gruppo 
+
+graph = multiparticleE(Np,L,R,v,Nt);
+
+scatter(graph[1][:,1], graph[1][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles  First step")
+
+scatter(graph[end][:,1], graph[end][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles  Last step" )
+
+

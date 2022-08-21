@@ -231,3 +231,63 @@ function hardsphere(xy::Array{Float64,2}, R::Float64; tol::Float64=1e-3)
 end
 #------------------------------ 
 
+function multiparticleE(Np::Integer, L::Float64, R::Float64, v::Float64, Nt::Int64=2, δt::Float64=1e-3)
+    (Nt isa Int64) ? Nt : Nt=convert(Int64,Nt)
+    
+    ABPE = Vector{ABPE2}(undef,Nt+1)
+    ABPE[1], matrices = initABPE( Np, L, R, v ) # including initial hardsphere correction
+    
+    simulate!(ABPE, matrices, Nt, δt)
+    
+    return position.(ABPE)
+end
+
+function simulate!(ABPE, matrices, Nt, δt)
+    # PΘ = [ (position(abpe), orientation(abpe)) ]
+    # pθ = PΘ[1]
+    
+    for nt in 1:Nt
+        ABPE[nt+1] = update(ABPE[nt],matrices,δt)
+    end
+    return nothing
+end
+
+position(abpe::ABPE2) = [ abpe.x abpe.y ]
+orientation(abpe::ABPE2) = abpe.θ
+
+function update(abpe::ABPE, matrices::Tuple{Matrix{Float64}, BitMatrix, BitMatrix}, δt::Float64) where {ABPE <: ABPsEnsemble}
+    pθ = ( position(abpe), orientation(abpe) ) .+ step(abpe,δt)
+
+    periodic_BC_array!(pθ[1],abpe.L)
+
+    hardsphere!(pθ[1], matrices[1], matrices[2], matrices[3], abpe.R)
+    # @btime hardsphere!($p[:,1:2], $matrices[1], $matrices[2], $matrices[3], $params.R)
+    new_abpe = ABPE2( abpe.Np, abpe.L, abpe.R, abpe.v, abpe.DT, abpe.DR, pθ[1][:,1], pθ[1][:,2], pθ[2] )
+
+    return new_abpe
+end
+
+
+function step(abpe::ABPE, δt::Float64) where {ABPE <: ABPsEnsemble}
+    if size(position(abpe),2) == 2
+        δp = sqrt.(2*δt*abpe.DT)*randn(abpe.Np,2) .+ abpe.v*δt*[cos.(abpe.θ) sin.(abpe.θ)]
+        δθ = sqrt(2*abpe.DR*δt)*randn(abpe.Np)
+    else
+        println("No step method available")
+    end
+    return (δp, δθ)
+end
+
+function periodic_BC_array!(xy::Array{Float64,2},L::Float64)
+	# Boundary conditions: horizontal edge
+	idx = abs.(xy[:,1]) .> L/2 + R
+	if any(idx)
+		xy[idx,1] .-= sign.(xy[idx,1]).*L
+	end
+	# Boundary conditions: vertical edge
+	idy = abs.(xy[:,2]) .> L/2 + R
+	if any(idy)
+		xy[idy,2] .-= sign.(xy[idy,2]).*L
+	end
+	return nothing
+end
