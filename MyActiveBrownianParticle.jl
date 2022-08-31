@@ -180,15 +180,15 @@ end
 #------------------------------ 
 # FUNZIONI PER LA CORREZIONE DELLE POSIZIONI DI PARTICELLE SOVRAPPOSTE
 function hardsphere_correction!(xy::Array{Float64,2}, dists::Array{Float64,2}, superpose::BitArray{2}, R::Float64; tol::Float64=1e-3)
-    Np = size(superpose,1)
+    Np = size(superpose,1) #mi dà il numero di righe di superpose 
     for np1 in 1:Np
-        if any(superpose[np1,:])
+        if any(superpose[np1,:])  #se almeno un valore della riga np1 è true  
             np2 = findfirst(superpose[np1,:])
             Δp = (xy[np1,:] - xy[np2,:]) .* ( ( (1+tol)*2R / dists[np1,np2] - 1 ) / 2 )
             xy[np1,:] += Δp
             xy[np2,:] -= Δp
-            dists[np2,np2+1:Np] = pairwise(Euclidean(), xy[np2:np2,:], xy[np2+1:Np,:], dims=1 )
-            superpose[np2,np2+1:Np] = (dists[np2,np2+1:Np] .< 2R*(1-tol))
+            dists[np2,np2+1:Np] = pairwise(Euclidean(), xy[np2:np2,:], xy[np2+1:Np,:], dims=1 )  #????
+            superpose[np2,np2+1:Np] = (dists[np2,np2+1:Np] .< 2R*(1-tol))  #????
         end
     end
     return nothing
@@ -238,7 +238,7 @@ function multiparticleE(Np::Integer, L::Float64, R::Float64, v::Float64, Nt::Int
     ABPE[1], matrices = initABPE( Np, L, R, v ) # including initial hardsphere correction
     
     simulate!(ABPE, matrices, Nt, δt)
-    
+
     return position.(ABPE)
 end
 
@@ -248,6 +248,7 @@ function simulate!(ABPE, matrices, Nt, δt)
     
     for nt in 1:Nt
         ABPE[nt+1] = update(ABPE[nt],matrices,δt)
+        println("Step $nt")
     end
     return nothing
 end
@@ -258,7 +259,7 @@ orientation(abpe::ABPE2) = abpe.θ
 function update(abpe::ABPE, matrices::Tuple{Matrix{Float64}, BitMatrix, BitMatrix}, δt::Float64) where {ABPE <: ABPsEnsemble}
     pθ = ( position(abpe), orientation(abpe) ) .+ step(abpe,δt)
 
-    periodic_BC_array!(pθ[1],abpe.L)
+    periodic_BC_array!(pθ[1],abpe.L, abpe.R)
 
     hardsphere!(pθ[1], matrices[1], matrices[2], matrices[3], abpe.R)
     # @btime hardsphere!($p[:,1:2], $matrices[1], $matrices[2], $matrices[3], $params.R)
@@ -269,20 +270,24 @@ end
 
 
 function step(abpe::ABPE, δt::Float64) where {ABPE <: ABPsEnsemble}
+    
     if size(position(abpe),2) == 2
         δp = sqrt.(2*δt*abpe.DT)*randn(abpe.Np,2) .+ abpe.v*δt*[cos.(abpe.θ) sin.(abpe.θ)]
         δθ = sqrt(2*abpe.DR*δt)*randn(abpe.Np)
     else
         println("No step method available")
     end
+    #if nt == 1 
+        #println("lo step vero di questo giro è: $δp") 
+    #end
     return (δp, δθ)
 end
 
-function periodic_BC_array!(xy::Array{Float64,2},L::Float64)
+function periodic_BC_array!(xy::Array{Float64,2},L::Float64, R)   #quando una particella supera un bordo ricompare dalla parte opposta
 	# Boundary conditions: horizontal edge
-	idx = abs.(xy[:,1]) .> L/2 + R
+	idx = abs.(xy[:,1]) .> L/2 + R #creo vettore idx in cui ho 1 dove il valore assoluto della coordinata x delle particelle è fuori dall'area di osservazione 
 	if any(idx)
-		xy[idx,1] .-= sign.(xy[idx,1]).*L
+		xy[idx,1] .-= sign.(xy[idx,1]).*L   #dove ho uni in idx faccio ricomparire la particella dalla parte opposta di x rispetto allo 0 
 	end
 	# Boundary conditions: vertical edge
 	idy = abs.(xy[:,2]) .> L/2 + R
@@ -290,4 +295,61 @@ function periodic_BC_array!(xy::Array{Float64,2},L::Float64)
 		xy[idy,2] .-= sign.(xy[idy,2]).*L
 	end
 	return nothing
+end
+# ---------------------------------------------------
+# impongo la condizione di rimbalzo delle particelle
+
+function wall_condition!(xy::Array{Float64,2},L::Float64, R, step_mem::Array{Float64,2}) #quando una particella tocca un bordo rimbalza
+    #if nt == 1 
+        #println("lo step che uso poi in questo giro è: $step_mem") 
+    #end
+	# Boundary conditions: horizontal edge
+	idx = abs.(xy[:,1]) .> (L/2 - R)
+	if any(idx)
+		xy[idx,1] .-= 2*sign.(xy[idx,1]).*(abs.(xy[idx,1]) .- (L/2 - R)) 
+	end
+	# Boundary conditions: vertical edge
+	idy = abs.(xy[:,2]) .> (L/2 - R)
+	if any(idy)
+        xy[idy,2] .-= 2*sign.(xy[idy,2]).*(abs.(xy[idy,2]) .- (L/2 - R))
+	end
+	return nothing
+end
+
+function update_wall(abpe::ABPE, matrices::Tuple{Matrix{Float64}, BitMatrix, BitMatrix}, δt::Float64) where {ABPE <: ABPsEnsemble}
+    memory_step = step(abpe,δt)
+    #if nt == 1 
+        #println("lo step di questo giro è: $memory") 
+    #end
+    pθ = ( position(abpe), orientation(abpe) ) .+ memory_step
+
+    wall_condition!(pθ[1],abpe.L, abpe.R, memory_step[1])
+
+    hardsphere!(pθ[1], matrices[1], matrices[2], matrices[3], abpe.R)
+    # @btime hardsphere!($p[:,1:2], $matrices[1], $matrices[2], $matrices[3], $params.R)
+    new_abpe = ABPE2( abpe.Np, abpe.L, abpe.R, abpe.v, abpe.DT, abpe.DR, pθ[1][:,1], pθ[1][:,2], pθ[2] )
+
+    return new_abpe
+end
+
+function simulate_wall!(ABPE, matrices, Nt, δt)
+    # PΘ = [ (position(abpe), orientation(abpe)) ]
+    # pθ = PΘ[1]
+    
+    for nt in 1:Nt
+        ABPE[nt+1] = update_wall(ABPE[nt],matrices,δt)
+        println("Step $nt")
+    end
+    return nothing
+end
+
+function multiparticleE_wall(Np::Integer, L::Float64, R::Float64, v::Float64, Nt::Int64=2, δt::Float64=1e-3)
+    (Nt isa Int64) ? Nt : Nt=convert(Int64,Nt)
+    
+    ABPE = Vector{ABPE2}(undef,Nt+1)
+    ABPE[1], matrices = initABPE( Np, L, R, v ) # including initial hardsphere correction
+    
+    simulate_wall!(ABPE, matrices, Nt, δt)
+    
+    return position.(ABPE)
 end

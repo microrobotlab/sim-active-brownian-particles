@@ -273,7 +273,7 @@ begin
 		framerate = 0.0
 	end
 	scatter(x[n][:,1],x[n][:,2],markersize=350R/L, legend=false, aspect_ratio=:equal, lims=((-L/2-R, L/2+R)))
-	title!("step $n, $framerate fps")
+	title!("step $n")
 	
 end
 
