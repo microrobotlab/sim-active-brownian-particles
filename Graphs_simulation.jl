@@ -114,15 +114,32 @@ L = 100.0 	# μm
 R = 1.0		# μm
 v = 10.0 	# μm/s
 DT, DR = diffusion_coeff(R).*[1e12, 1]
-packing_fraction = 0.2
+packing_fraction = 0.1
 Np = round(Int,packing_fraction*L^2/(2R^2))  # Np è il numero di particelle del mio insieme e lo sceglo random
 
 Nt = 1000 # Nt è il numero di step che voglio calcolare del mio gruppo 
 
 graph = multiparticleE(Np,L,R,v,Nt);
 
-scatter(graph[1][:,1], graph[1][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles  First step")
+scatter(graph[1][:,1], graph[1][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles, step n°1")
+plot!([L/2], seriestype="vline")
+plot!([-L/2], seriestype="vline")
 
-scatter(graph[end][:,1], graph[end][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles  Last step" )
+scatter(graph[20][:,1], graph[20][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles, step n°$Nt" )
+plot!([L/2], seriestype="vline")
+plot!([-L/2], seriestype="vline")
 
+
+
+# Stessa cosa con la condizione di wall (rimbalzano le particelle nel bordo)
+
+graph_wall = multiparticleE_wall(Np,L,R,v,Nt);
+
+scatter(graph_wall[2][:,1], graph_wall[2][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles, step n°2")
+plot!([L/2], seriestype="vline")
+plot!([-L/2], seriestype="vline")
+
+scatter(graph_wall[end][:,1], graph_wall[end][:,2], markersize=350R/L, legend=false, aspect_ratio=:equal, title = "$Np particles, step n°$Nt")
+plot!([L/2], seriestype="vline")
+plot!([-L/2], seriestype="vline")
 
