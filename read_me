@@ -1,0 +1,7 @@
+READ ME
+This thesis is part of CELLOIDS project. 
+TITLE: "Microrobotica in medicina: analisi e simulazione del movimento di particelle attive" 
+AIM: The aim of this work is to analyze and simulate moviment of active particle. At the beginning we simulate active brownian motion for a single active particle, 
+after we expanded the method by considering swarms of active particle (hardsphere correction). 
+CANDIDATE: Lapo Corti
+SUPERVISORS: Prof.Paolo Piaggi , Dott.Stefano Palagi
