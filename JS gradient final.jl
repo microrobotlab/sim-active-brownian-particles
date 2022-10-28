@@ -1,5 +1,5 @@
 #this code will check and calculate the gradients 
-
+# JS
 using ForwardDiff
 #--------------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ end
 function grad(x::Array{Float64})
      
     f(x) = 4x[1]^2 + 3x[1] + 10*(sin.(x[2]))
-    df=ForwardDiff.gradient(f, [x[1],x[2]])
+    df=ForwardDiff.gradient(f, [x[1],x[2]]) # calculate gradient of function f at points x[1] amd x[2]
     
     return df
 end
