@@ -6,7 +6,7 @@ using BenchmarkTools, Plots, LaTeXStrings, Statistics, CSV, DataFrames
 
 gr()
 
-function stat_analysis1(a,b,R,pathf)
+function stat_analysis2(a,b,R,pathf)
   f1= pathf*"_p.csv"
   df= CSV.read(f1, DataFrame)
   neq= df[!,:p1]
@@ -23,6 +23,13 @@ Ap= a*b*(atan(b/(tan(eθ)*a)))
   mpfe = meq*(0.5*π/Aeq)*pf_factor 
   mpfp = mpole*(0.5*π/Ap)*pf_factor 
   println("i am in ABP SD")
-return meq, sdeq, mpole,sdpole
-#return mpfe, mpfp
+  sdpfe= sdeq*(0.5*π/Aeq)*pf_factor  # standard deviation of pf at equators
+  sdpfp= sdpole*(0.5*π/Ap)*pf_factor 
+
+plot( [1:2], [mpfe,mpfp], yerror = [sdpfe,sdpfp], xtick=0:3, ytick= 0:0.2:0.5, xlimit= (0,3), ylimit= (0,0.5), grid= false, legend = false, ytickfont=font(17), xtickfont=font(17), linewidth=2, linecolor= "black")
+
+savefig(pathf*"_error.png")
+return mpfe, sdpfe,mpfp, sdpfp
+#return meq, sdeq, mpole,sdpole
+
 end

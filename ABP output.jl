@@ -58,7 +58,8 @@ pathf= path*filename
 file_store(graph_wall,Nt,pathf)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------
 # analysis
-inside_Np=stat_analysis2(a,b,R,pathf)
+inside_Np=stat_analysis1(a,b,R,pathf)
+analysis_SD= stat_analysis2(a,b,R,pathf)
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # making animation
 anim = @animate for i = 1:100:Nt

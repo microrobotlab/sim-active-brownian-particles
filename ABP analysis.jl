@@ -7,7 +7,7 @@ using BenchmarkTools, Plots, LaTeXStrings, Statistics, CSV, DataFrames,Categoric
 
 gr()
 
-function stat_analysis2(a,b,R,pathf)
+function stat_analysis1(a,b,R,pathf)
   f= pathf*".csv"
   f1= pathf*"_p.csv"
   f2= pathf*"_pf.png"
