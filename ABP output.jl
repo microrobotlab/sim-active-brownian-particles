@@ -32,7 +32,7 @@ DT, DR = diffusion_coeff(R).*[1e12, 1]
 packing_fraction = 0.1
 Np = round(Int,packing_fraction*L^2/(2R^2))  #Np is the number of particles in my set and I choose it random?
 #π
-Nt = 10000# Nt is the number of steps 
+Nt = 1000# Nt is the number of steps 
 #println(" Number of particles: $Np") 
 @timed graph = multiparticleE(Np,L,R,v,Nt);
 
@@ -64,7 +64,11 @@ ICS=3               # number of intial conditons to be scanned
 
 folders=  multipledir(patht,ICS) 
 
-pathf= path*filename  
+for i=1:ICS
+
+    pathf= patht*"run$i\\"
+    filename= "$datestamp R=$R v=$v a=$a b=$b run$i"
+    pathf= pathf*filename
 #---------------------------------------------------------------------------------------------------------------------
 # file store
 file_store(graph_wall,Nt,pathf)
@@ -85,6 +89,6 @@ end
 
 f1= pathf*".gif"
 gif(anim, f1)
-
+end
 
 
