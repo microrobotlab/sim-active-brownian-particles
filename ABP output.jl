@@ -5,7 +5,7 @@ include("ABP main.jl")
 include("ABP file.jl")
 include("ABP analysis.jl")
 include("ABP SD.jl")
-
+include("ABP multifolder.jl")
 using BenchmarkTools,Plots,Distances,NaNStatistics,CSV, DataFrames
 
 gr()
@@ -47,10 +47,22 @@ println("multiparticleE complied\n")
 
 println("multiparticleE_wall complied\n")
 #-------------------------------------------------------------------------------------------------------------------
-# destination folder/filename selection
-path="C:\\Users\\j.sharma\\OneDrive - Scuola Superiore Sant'Anna\\Coding\\2023\\"  # destination folder path
 
-filename="data_ellipse"   # filename base for all data
+# destination folders selection
+path="C:\\Users\\j.sharma\\OneDrive - Scuola Superiore Sant'Anna\\P07 Coding\\2023\\July\\" # destination folder path
+
+datestamp=Dates.format(now(),"YYYYmmdd-HHMMSS")  # todays date
+
+mainfolder= mkdir(path*"$datestamp")    # creates a folder names todays'late
+
+path1= path*"$datestamp\\"
+
+mainfolder1= mkdir(path1*"R=$R v=$v a=$a b=$b")
+
+patht= path*"$datestamp\\R=$R v=$v a=$a b=$b\\"
+ICS=3               # number of intial conditons to be scanned 
+
+folders=  multipledir(patht,ICS) 
 
 pathf= path*filename  
 #---------------------------------------------------------------------------------------------------------------------
