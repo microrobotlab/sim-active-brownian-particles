@@ -34,18 +34,6 @@ Np = round(Int,packing_fraction*L^2/(2R^2))  #Np is the number of particles in m
 #π
 Nt = 1000# Nt is the number of steps 
 #println(" Number of particles: $Np") 
-@timed graph = multiparticleE(Np,L,R,v,Nt);
-
-println("multiparticleE complied\n")
-
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------
-# THIS IS THE CODE TO CALL WALL FUNCTIONS IN THE MAIN FUNCTION
-
-# Same with the wall condition (particles bounce off the edge)
-
-@timed graph_wall = multiparticleE_wall(Np,L,R,v,Nt) # has values of x and y posiiton in each frame in graph_wall[1]
-
-println("multiparticleE_wall complied\n")
 #-------------------------------------------------------------------------------------------------------------------
 
 # destination folders selection
@@ -60,7 +48,7 @@ path1= path*"$datestamp\\"
 mainfolder1= mkdir(path1*"R=$R v=$v a=$a b=$b")
 
 patht= path*"$datestamp\\R=$R v=$v a=$a b=$b\\"
-ICS=3               # number of intial conditons to be scanned 
+ICS=1            # number of intial conditons to be scanned 
 
 folders=  multipledir(patht,ICS) 
 
@@ -69,6 +57,18 @@ for i=1:ICS
     pathf= patht*"run$i\\"
     filename= "$datestamp R=$R v=$v a=$a b=$b run$i"
     pathf= pathf*filename
+
+    graph = multiparticleE(Np,L,R,v,Nt);    # function to simulation particles with open boundary 
+
+      println("multiparticleE complied\n")
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------
+# THIS IS THE CODE TO CALL WALL FUNCTIONS IN THE MAIN FUNCTION
+
+# Same with the wall condition (particles bounce off the edge)
+
+graph_wall = multiparticleE_wall(Np,L,R,v,Nt) # has values of x and y posiiton in each frame in graph_wall[1]
+
+println("multiparticleE_wall complied\n")
 #---------------------------------------------------------------------------------------------------------------------
 # file store
 file_store(graph_wall,Nt,pathf)
