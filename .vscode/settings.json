@@ -1,3 +1,4 @@
 {
-    "workbench.colorTheme": "Visual Studio Dark"
+    "workbench.colorTheme": "Visual Studio Dark",
+    "julia.environmentPath": "c:\\Users\\j.sharma\\Documents\\GitHub\\active-brownian-particles"
 }
