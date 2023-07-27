@@ -19,10 +19,10 @@ abstract type ABPsEnsemble end
 struct ABPE2 <: ABPsEnsemble
     Np::Int64                      # number of particles
     L::Float64                      # size of observation space (μm)
-	R::Float64  # Radius (μm)                                   --> Vector{Float64}(undef,Np)
-	v::Float64 	# velocity (μm/s)                               --> Vector{Float64}(undef,Np)
-	DT::Float64 # translational diffusion coefficient (μm^2/s)  --> Vector{Float64}(undef,Np)
-	DR::Float64 # rotational diffusion coefficient (rad^2/s)    --> Vector{Float64}(undef,Np)
+	R::Float64  # Radius (μm)                                   
+	v::Float64 	# velocity (μm/s)                               
+	DT::Float64 # translational diffusion coefficient (μm^2/s)  
+	DR::Float64 # rotational diffusion coefficient (rad^2/s)    
 	x::Vector{Float64}    # x position (μm)
 	y::Vector{Float64}    # y position (μm)
 	θ::Vector{Float64}    # orientation (rad)
