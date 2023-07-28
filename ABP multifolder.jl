@@ -1,3 +1,5 @@
+# PURPOSE: CREATE MULTIPLE FOLDERS
+# INPUT: PATH AND NUMBER OF FOLDERS
 using FilePaths
 
 function multipledir(path, ICS)

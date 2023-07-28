@@ -2,7 +2,7 @@
 # PURPOSE:Store the output of main code ABP output.jl
 # METHOD: Dataframes are used 
 # INPUT: array of postions and orientation
-# OUTPUT: saved excel file (f1)
+# OUTPUT: saved .csv file (f1)
 
 using CSV, DataFrames
 
