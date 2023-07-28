@@ -1,5 +1,5 @@
 ## PURPOSE: 
-Simulate the dynamics of active brownian particles moving in 2D (in Julia). The particles are interacting via hard sphere correction. 
+Simulate the dynamics of active Brownian particles moving in 2D (in Julia). The particles interact via hard sphere correction. 
 Code can simulate both open (periodic) and closed hard boundary condition.
 When confined, particles are reflected from the boundary.
 
@@ -17,15 +17,15 @@ Jyoti Sharma <sup>1</sup>, Lapo Corti<sup>2</sup>, Stefano Palagi<sup>1</sup>
 Julia
 ## INSTRUCTIONS TO RUN THE CODE:
 1) Open ABP output.jl file
-2) Set destination folder path
+2) Set a destination folder path
 3) Set the parameters
 4) Run the code
-5) After compliation, there will be a folder named "date/time" of run and inside subfolder named "simulation parameters" and inside it there will be multiple folders, named run1, run2---- runICS, where ICS is the  number of initial conditions scan for a given set of parameters
-6) Output will be a gif, two csv files and one plot
+5) After compilation, there will be a folder named "date/time" of run and an inside subfolder named "simulation parameters", and inside it, there will be multiple folders, named run1, run2---- runICS, where ICS is the  number of initial conditions scans for a given set of parameters
+6) Output will be a gif, two CSV files and one plot
 7) Gif file shows the evolution of the particles
-7) File named XXXX.csv has information of the position and orientation of all simulated particles
-8) File named XXXX_p.csv has information of number of particles at equators or poles of the ellipse
-9) Plot named XXXX.png shows the temporal evolution of packing fraction of particles at equators or poles of the ellipse
+7) File named XXXX.csv has information on the position and orientation of all simulated particles
+8) File named XXXX_p.csv has information on number of particles at equators or poles of the ellipse
+9) Plot named XXXX.png shows the temporal evolution of the packing fraction of particles at equators or poles of the ellipse
 
 
 ## REFERENCES
